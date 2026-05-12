@@ -33,6 +33,9 @@ public class WikimediaChangeHandler implements EventHandler {
     public void onMessage(String event, MessageEvent messageEvent) {
         log.info("####### on message {}", messageEvent.getData());
         // asynchronous
+        // if the buffer.memory is full (due to messages cannot be sent to broker e.g inactive broker, broker is slow...etc.
+        // and this send() method will be block (not async while blocked) until max.block.ms elapsed => throw an exception
+        // in this case we need to take a look at our broker.
         kafkaProducer.send(new ProducerRecord<>(topic, messageEvent.getData()));
     }
 

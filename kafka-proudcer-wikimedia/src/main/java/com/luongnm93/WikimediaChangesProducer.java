@@ -5,6 +5,7 @@ import com.launchdarkly.eventsource.EventSource;
 import okhttp3.Headers;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.record.CompressionType;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.net.URI;
@@ -28,6 +29,11 @@ public class WikimediaChangesProducer {
          *         properties.setProperty(ProducerConfig.RETRIES_CONFIG, Integer.toString(Integer.MAX_VALUE));
          */
 
+        // High throughput setting
+        properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, "20");
+        // 32 kb
+        properties.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, Integer.toString(32 * 1024));
+        properties.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, CompressionType.SNAPPY.toString());
 
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
         String topic = "wikimedia.recentChange";
